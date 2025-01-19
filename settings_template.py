@@ -1,3 +1,5 @@
+# The Solr endpoint URL
+SOLR_ENDPOINT = 'http://localhost:8983/solr'
 
 # The name of the Solr collection where Wikidata is indexed
 SOLR_COLLECTION = 'wd_2019-02-24'
