@@ -104,10 +104,11 @@ def pagerank_shell(filename):
 @click.option('-p', '--profile', help='Filename of the indexing profile to use')
 @click.option('-s', '--shards', default=1, help='Number of shards to use when creating the collection, if needed')
 @click.option('-k', '--skip', default=0, help='Number of documents to skip because they are already indexed')
-def index_dump(collection_name, filename, profile, shards, skip, solr='http://localhost:8983/solr/'):
+def index_dump(collection_name, filename, profile, shards, skip):
     """
     Indexes a Wikidata dump in a new Solr collection with the given name.
     """
+    solr = os.environ.get('SOLR_ENDPOINT', 'http://localhost:8983/solr/')
     tagger = TaggerFactory(solr)
     indexing_profile = IndexingProfile.load(profile)
     try:
@@ -123,10 +124,11 @@ def index_dump(collection_name, filename, profile, shards, skip, solr='http://lo
 @click.argument('sparql_query_file')
 @click.option('-p', '--profile', help='Filename of the indexing profile to use')
 @click.option('-s', '--shards', default=1, help='Number of shards to use when creating the collection, if needed')
-def index_sparql(collection_name, sparql_query_file, profile, shards, solr='http://localhost:8983/solr/'):
+def index_sparql(collection_name, sparql_query_file, profile, shards):
     """
     Indexes the results of a SPARQL query which contains an "item" variable pointing to items to index
     """
+    solr = os.environ.get('SOLR_ENDPOINT', 'http://localhost:8983/solr/')
     tagger = TaggerFactory(solr)
     indexing_profile = IndexingProfile.load(profile)
     try:
@@ -143,11 +145,12 @@ def index_sparql(collection_name, sparql_query_file, profile, shards, solr='http
 @click.option('-p', '--profile', help='Filename of the indexing profile to use')
 @click.option('-s', '--shards', default=1, help='Number of shards to use when creating the collection, if needed')
 @click.option('-a', '--after', default=None, help='Start indexing the stream after the given point in time (in the past)')
-def index_stream(collection_name, profile, shards, after, solr='http://localhost:8983/solr/'):
+def index_stream(collection_name, profile, shards, after):
     """
     Listens to the Wikidata edit stream and updates a collection according to
     the given indexing profile.
     """
+    solr = os.environ.get('SOLR_ENDPOINT', 'http://localhost:8983/solr/')
     tagger = TaggerFactory(solr)
     indexing_profile = IndexingProfile.load(profile)
     try:
@@ -162,7 +165,8 @@ def index_stream(collection_name, profile, shards, after, solr='http://localhost
 
 @click.command()
 @click.argument('collection_name')
-def delete_collection(collection_name, solr='http://localhost:8983/solr/'):
+def delete_collection(collection_name):
+    solr = os.environ.get('SOLR_ENDPOINT', 'http://localhost:8983/solr/')
     tagger = TaggerFactory(solr)
     tagger.delete_collection(collection_name)
 
