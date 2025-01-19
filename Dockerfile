@@ -44,4 +44,6 @@ RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* \
 
 COPY . ${APP_HOME}/
 
+RUN python setup.py install
+
 CMD ["python", "app.py"]
