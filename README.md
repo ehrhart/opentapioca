@@ -31,13 +31,13 @@ docker network create opentapioca-network
 
 ### Step 3: Set Up the Solr Server
 ```bash
-docker run -d --network opentapioca-network -v opentapioca-solr-data:/var/solr -v ./configsets:/configsets -p 8983:8983 --name opentapioca-solr solr:7.4 -c -m 4g
+docker run --name=opentapioca-solr --env='SOLR_JAVA_MEM=-Xms10g -Xmx10g' --volume=opentapioca-solr-data:/var/solr --volume=./configsets:/configsets --network=opentapioca-network -p 8983:8983 --restart=unless-stopped --detach=true solr:8 -c -m 8g
 docker exec -it opentapioca-solr bin/solr zk -upconfig -z localhost:9983 -n tapioca -d /configsets/tapioca
 ```
 
 ### Step 4: Build the Application
 ```bash
-cp settings_docker.py settings.py
+cp settings_template.py settings.py
 docker build -t opentapioca .
 ```
 
@@ -53,7 +53,7 @@ docker build -t opentapioca .
    ```
 3. Index the dump using the OpenTapioca profile:
    ```bash
-   docker run --network opentapioca-network -v ./dump:/app/dump -v ./profiles:/app/profiles opentapioca bash -c "bunzip2 < dump/latest-all.json.bz2 | tapioca index-dump wd_2019-02-24 - --profile profiles/human_organization_location.json"
+   docker run --rm --detach=true --network=opentapioca-network --volume=./dump:/app/dump --volume=./profiles:/app/profiles opentapioca bash -c "bunzip2 < dump/latest-all.json.bz2 | tapioca index-dump wd_2019-02-24 - --profile profiles/human_organization_location.json"
    ```
 
 ### Step 6: Compute or Download Supporting Data
@@ -91,7 +91,7 @@ wget -c https://github.com/wetneb/opentapioca/releases/download/v0.1.0/sample_cl
 ### Step 7: Run the OpenTapioca Application
 Start the OpenTapioca application:
 ```bash
-docker run -d --network opentapioca-network -p 8457:8457 -v ./dump:/app/dump -v ./data:/app/data --name opentapioca-app opentapioca
+docker run --name=opentapioca-app --env=SOLR_ENDPOINT=http://opentapioca-solr:8983/solr --volume=/home/cixty/Services/opentapioca/dump:/app/dump --volume=/home/cixty/Services/opentapioca/data:/app/data --network=opentapioca-network -p 8457:8457 --restart=unless-stopped --detach=true opentapioca
 ```
 
 Open your browser and navigate to http://localhost:8457.
