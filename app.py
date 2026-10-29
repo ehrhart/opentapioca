@@ -7,6 +7,10 @@ from pynif import NIFCollection
 import logging
 import settings
 
+# Bottle caps request bodies at 100 KiB by default, which rejects long
+# documents outright; deployments annotating full texts raise the limit.
+bottle.BaseRequest.MEMFILE_MAX = int(os.environ.get('MEMFILE_MAX', bottle.BaseRequest.MEMFILE_MAX))
+
 from opentapioca.wikidatagraph import WikidataGraph
 from opentapioca.languagemodel import BOWLanguageModel
 from opentapioca.tagger import Tagger
