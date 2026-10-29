@@ -17,6 +17,7 @@ This explains how to install and configure OpenTapioca.
    classifier_training
    webapp
    testing
+   docker
 
 
 Indices and tables
