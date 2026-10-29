@@ -25,7 +25,10 @@ ENV PYTHONDONTWRITEBYTECODE 1
 WORKDIR ${APP_HOME}
 
 # Install apt packages
-RUN apt-get update && apt-get install --no-install-recommends -y \
+RUN sed -i -e 's|deb.debian.org|archive.debian.org|g' \
+           -e 's|security.debian.org|archive.debian.org|g' \
+           -e '/buster-updates/d' /etc/apt/sources.list \
+    && apt-get -o Acquire::Check-Valid-Until=false update && apt-get install --no-install-recommends -y \
     # dependencies for downloading wikidump
     wget \
     bzip2 \
