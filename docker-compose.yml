@@ -1,0 +1,43 @@
+volumes:
+  opentapioca-solr-data:
+
+services:
+  solr:
+    image: solr:8
+    container_name: opentapioca-solr
+    ports:
+      - "${SOLR_PORT:-8983}:8983"
+    volumes:
+      - opentapioca-solr-data:/var/solr
+      - ./configsets:/configsets
+    command: -c -m ${SOLR_HEAP:-8g}
+    restart: unless-stopped
+
+  app:
+    image: opentapioca
+    build: .
+    container_name: opentapioca-app
+    ports:
+      - "${APP_PORT:-8457}:8457"
+    volumes:
+      - ./dump:/app/dump
+      - ./data:/app/data
+    environment:
+      - SOLR_ENDPOINT=http://solr:8983/solr
+      - MEMFILE_MAX=${MEMFILE_MAX:-10485760}
+    depends_on:
+      - solr
+    restart: unless-stopped
+
+  indexer:
+    image: opentapioca
+    profiles:
+      - indexing
+    volumes:
+      - ./dump:/app/dump
+      - ./profiles:/app/profiles
+    environment:
+      - SOLR_ENDPOINT=http://solr:8983/solr/
+    command: bash -c "bunzip2 < /app/dump/latest-all.json.bz2 | tapioca index-dump wd_2019-02-24 - --profile profiles/human_organization_location.json"
+    depends_on:
+      - solr

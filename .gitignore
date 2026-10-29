@@ -16,3 +16,4 @@ data/*.npy
 data/*.npz
 data/*.tsv
 docs/_build/
+.env

@@ -3,6 +3,17 @@ Using Docker
 
 The following instructions demonstrate how to set up OpenTapioca using Docker.
 
+The repository ships a ``docker-compose.yml`` that starts Solr and the
+application together::
+
+   docker compose up -d solr app
+
+A ``.env`` file next to it overrides the defaults: ``SOLR_HEAP`` for the
+Solr heap, ``MEMFILE_MAX`` for the request body cap, ``SOLR_PORT`` and
+``APP_PORT`` for the published ports. The 8g heap default fits the full
+Wikidata index; lower it only on a small host. The sections below run the
+same setup manually.
+
 Creating the Network
 --------------
 
