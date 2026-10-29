@@ -9,3 +9,10 @@ opentapioca.egg-info/
 .settings/
 configsets/_default/
 settings.py
+
+dump/
+data/*.pkl
+data/*.npy
+data/*.npz
+data/*.tsv
+docs/_build/
